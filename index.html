@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>SRPCOM OTP XL</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://files.catbox.moe/xemyih.jpg" type="image/jpeg">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .glass-card {
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        .pulsating-border {
+            border: 2px solid #22c55e;
+            animation: pulse-green 2s infinite;
+        }
+        #cover-spin {
+            position:fixed; width:100%; height:100%; left:0; right:0; top:0; bottom:0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index:9999; display:none;
+        }
+        @keyframes spin { from {transform:rotate(0deg);} to {transform:rotate(360deg);} }
+        #cover-spin::after {
+            content:''; display:block; position:absolute; left: 50%; top: 50%;
+            margin-left: -20px; margin-top: -20px; width:40px; height:40px;
+            border-style:solid; border-color:#16a34a; border-top-color:transparent;
+            border-width: 4px; border-radius:50%; animation: spin .8s linear infinite;
+        }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+        input[type=number] { -moz-appearance: textfield; }
+        .glass-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+    </style>
+</head>
+<body class="bg-red-800">
+
+    <!-- Loading Spinner Overlay -->
+    <div id="cover-spin"></div>
+
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md rounded-2xl shadow-2xl p-8 space-y-6 glass-card">
+            
+            <!-- Header Section -->
+            <div class="text-center">
+                <img src="https://raw.githubusercontent.com/srpcom/netlify/main/logo%20kecil%20srpcom.png" alt="Logo SRPCOM" class="mx-auto h-16 w-auto" onerror="this.onerror=null; this.src='https://placehold.co/100x100/eab308/ffffff?text=SRPCOM';">
+                <h1 class="mt-4 text-3xl font-bold text-white">SRPCOM OTP XL</h1>
+                <p class="text-sm text-gray-200 mt-1">
+                    <a href="https://t.me/srpcomgroup" target="_blank" class="hover:underline">silakan join ke t.me/srpcomgroup</a>
+                </p>
+            </div>
+
+            <!-- Main Form Section -->
+            <form action="" method="POST" onsubmit="return false;" class="space-y-4">
+                
+                <!-- MSISDN (Phone Number) Input -->
+                <div>
+                    <label for="msisdn" id="msisdn-label" class="block text-sm font-medium text-yellow-400 animate-pulse">Masukkan nomer XL disini</label>
+                    <input type="number" id="msisdn" name="msisdn" class="glass-input pulsating-border mt-1 p-3 bg-transparent text-white rounded-lg w-full focus:outline-none" placeholder="Contoh: 0878..." required>
+                </div>
+
+                <!-- Action Buttons -->
+                <div id="action-buttons-section" style="display: none;">
+                    <div class="flex space-x-4 pt-2">
+                         <button type="button" class="w-full bg-yellow-500 text-white font-semibold p-3 rounded-lg hover:bg-yellow-600 transition-colors duration-300 shadow-lg" id="reqOTP">MINTA OTP / LOGIN</button>
+                         <button type="button" class="w-full bg-blue-500 text-white font-semibold p-3 rounded-lg hover:bg-blue-600 transition-colors duration-300 shadow-lg" id="checkQuotaPublicBtn">CEK KUOTA</button>
+                    </div>
+                </div>
+
+                <!-- OTP Input -->
+                <div id="otp-input-section" style="display: none;">
+                    <label for="otp" class="block text-sm font-medium text-gray-200">Kode OTP</label>
+                    <input type="text" id="otp" name="otp" class="glass-input mt-1 p-3 bg-transparent border border-white/30 text-white rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400" placeholder="Masukkan 6 digit kode" required>
+                </div>
+
+                <!-- Verify OTP Button -->
+                 <div id="login-button-section" style="display: none;">
+                    <button type="button" class="w-full bg-green-600 text-white font-semibold p-3 rounded-lg hover:bg-green-700 transition-colors duration-300 shadow-lg" id="verOTP">VERIFIKASI OTP</button>
+                </div>
+
+                <!-- Hidden fields for state management -->
+                <input type="hidden" id="auth_id" name="auth_id" value="">
+            </form>
+            
+            <!-- Log and Result Section -->
+            <div id="log-section" class="space-y-4 pt-4" style="display: none;">
+                <div>
+                    <p class="text-sm font-semibold text-gray-200">Log Respons:</p>
+                    <textarea class="mt-1 w-full p-2 bg-black/20 border border-white/20 text-white rounded-md text-base" id="logResponse" readonly></textarea>
+                </div>
+                
+                <!-- Final Action Buttons (New) -->
+                <div id="final-action-buttons" class="flex space-x-4 pt-4" style="display: none;">
+                    <a href="https://srpcom.online/qris" target="_blank" class="w-full text-center bg-green-600 text-white font-semibold p-3 rounded-lg hover:bg-green-700 transition-colors duration-300 shadow-lg">QRIS ADMIN</a>
+                    <a href="https://t.me/srpcomadmin" target="_blank" class="w-full text-center bg-blue-500 text-white font-semibold p-3 rounded-lg hover:bg-blue-600 transition-colors duration-300 shadow-lg">HUB ADMIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+$(document).ready(function(){
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxIifb625-oRg5uZ_SmnR_eI8zjoHLi1DYmk4jnbfbHgHQYFNOuHMcwJZdEsn2lSLrc/exec";
+    let _animation_timer = null;
+
+    async function callGasBackend(action, msisdn, payload = {}) {
+        $('#cover-spin').show(0);
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, msisdn, payload })
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.error("Error calling GAS Backend:", error);
+            return { status: false, message: `Gagal terhubung ke backend: ${error.message}` };
+        } finally {
+            $('#cover-spin').hide();
+        }
+    }
+
+    function logMessage(message, isError = false, isProcessing = false) {
+        const logBox = $('#logResponse');
+        if (_animation_timer) clearInterval(_animation_timer);
+        logBox.val(message).css('color', isError ? '#fca5a5' : '#86efac');
+        if (isProcessing) {
+            const baseMessage = message.replace(/\./g, '');
+            let dotCount = 0;
+            _animation_timer = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                logBox.val(baseMessage + '.'.repeat(dotCount));
+            }, 500);
+        }
+        const el = logBox[0];
+        el.style.height = 'auto';
+        el.style.height = (el.scrollHeight) + 'px';
+    }
+
+    function handleSuccessfulLogin(response) {
+        logMessage(response.message, false);
+        $('#action-buttons-section, #otp-input-section, #login-button-section').slideUp();
+        $('#final-action-buttons').slideDown();
+    }
+
+    $('#msisdn').on('input', function() {
+        if ($(this).val().length > 0) $('#msisdn-label').fadeOut('fast'); else $('#msisdn-label').fadeIn('fast');
+        if ($(this).val().length >= 11) $('#action-buttons-section, #log-section').slideDown();
+        else $('#action-buttons-section, #log-section, #otp-input-section, #login-button-section, #final-action-buttons').slideUp();
+    });
+    
+    $('#otp').on('input', function() {
+        if ($(this).val().length >= 6) $('#login-button-section').slideDown(); else $('#login-button-section').slideUp();
+    });
+
+    // --- Aksi Minta OTP / Login (Alur Baru) ---
+    $('#reqOTP').click(async function(){
+        const msisdn = $('#msisdn').val();
+        if (!msisdn) {
+            logMessage('Silakan masukkan Nomor XL terlebih dahulu.', true);
+            return;
+        }
+        logMessage('Mencoba login atau meminta OTP...', false, true);
+        
+        const s = await callGasBackend('login_flow', msisdn);
+        
+        if (s.login_success) {
+            handleSuccessfulLogin(s);
+        } else {
+            const isError = s.status === false;
+            logMessage(s.message, isError);
+            if (!isError && s.data && s.data.auth_id) {
+                $('#auth_id').val(s.data.auth_id);
+                $('#otp-input-section').slideDown();
+            }
+        }
+    });
+
+    // --- Aksi Verifikasi OTP (Alur Baru) ---
+    $('#verOTP').click(async function(){
+        const msisdn = $('#msisdn').val();
+        const otp = $('#otp').val();
+        if (!msisdn || !otp) {
+            logMessage('Nomor XL dan Kode OTP tidak boleh kosong.', true);
+            return;
+        }
+        logMessage('Memverifikasi OTP...', false, true);
+        const payload = { auth_id: $('#auth_id').val(), otp: otp };
+        const s = await callGasBackend('ver_otp', msisdn, payload);
+        
+        if (s.login_success) {
+            handleSuccessfulLogin(s);
+        } else {
+            const isError = s.status === false;
+            logMessage(s.message, isError);
+        }
+    });
+
+    // --- Aksi Cek Kuota Publik ---
+    $('#checkQuotaPublicBtn').click(async function(){
+        const msisdn = $('#msisdn').val();
+        if (!msisdn) {
+            logMessage('Silakan masukkan Nomor XL terlebih dahulu.', true);
+            return;
+        }
+        logMessage('Proses cek kuota, wait....', false, true);
+        const s = await callGasBackend('check_quota_public', msisdn);
+
+        if (s.status === false) {
+            const errorMessage = s.data && s.data.keteranganError ? s.data.keteranganError : s.message;
+            logMessage(errorMessage, true);
+        } else if (s.status === true) {
+            const resultText = s.data && s.data.hasil ? s.data.hasil.replace(/<br\s*\/?>/gi, "\n") : s.message;
+            logMessage(resultText, false);
+        } else {
+             logMessage(s.message || 'Terjadi kesalahan tidak diketahui.', true);
+        }
+    });
+});
+</script>
+
+</body>
+</html>
